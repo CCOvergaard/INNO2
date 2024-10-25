@@ -1,57 +1,64 @@
-
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database'; // Firebase funktioner til Realtime Database
-import { db } from '../Firebase'; // Firebase konfiguration
+import { View, TextInput, Button, Text, StyleSheet, Image } from 'react-native';
+import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
+import { db } from '../Firebase';
 
-// StudentSearch-komponent
 export default function StudentSearch() {
-  const [exam, setExam] = useState(''); // State-variabel til at gemme den eksamen, der søges på
-  const [tutors, setTutors] = useState([]); // State-variabel til at gemme de fundne tutorer
+  const [exam, setExam] = useState('');
+  const [tutors, setTutors] = useState([]);
 
   // Håndterer søgningen efter tutorer baseret på eksamen
   const handleSearch = () => {
-    const examQuery = query(ref(db, 'tutors'), orderByChild('subjects'), equalTo(exam)); // Opretter forespørgsel i databasen på baggrund af den "sti" som ref funktion der blev oprettede i "tutorSignup.js" 
+    const examQuery = query(ref(db, 'tutors'), orderByChild('subjects'), equalTo(exam));
 
-    // Udfører forespørgslen og opdaterer state med resultaterne
-    onValue(examQuery, (tutor) => {
-      const results = [];
-      tutor.forEach((tut) => {
-        results.push(tut.val());
-      });
-      setTutors(results);
-    }, {
-      onlyOnce: true, // Søger kun én gang
-    });
+    onValue(
+      examQuery,
+      (snapshot) => {
+        const results = [];
+        snapshot.forEach((tut) => {
+          results.push(tut.val());
+        });
+        setTutors(results);
+      },
+      {
+        onlyOnce: true,
+      }
+    );
   };
 
   // Returnerer komponenten
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Find a Tutor</Text>
+      <Text style={styles.header}>Find en Tutor</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter exam"
-        value={exam} // Værdien af inputfeltet
-        onChangeText={setExam} // Funktionen, der opdaterer state med inputværdien fra brugeren
+        placeholder="Indtast eksamen"
+        value={exam}
+        onChangeText={setExam}
       />
-      <Button title="Search" onPress={handleSearch} /> 
-      {/* Søge-knap */}
-      {tutors.length > 0 ? ( // Ternary operator, der viser tutorer, hvis der er nogen på det givet fag der er indtastet, ellers vises en besked
-        tutors.map((tutor, index) => (
-          <View key={index} style={styles.tutorCard}>
-            <Text style={styles.tutorText}>{tutor.name} </Text>
-            <Text style={styles.tutorText}>{tutor.subjects}</Text>
-            <Text style={styles.tutorText}>Rate: {tutor.rate}</Text>
-          </View>
-        ))
+      <Button title="Søg" onPress={handleSearch} />
+      {tutors.length > 0 ? (
+  tutors.map((tutor, index) => (
+    <View key={index} style={styles.tutorCard}>
+      {tutor.profileImage ? (
+        <Image source={{ uri: tutor.profileImage }} style={styles.profileImage} />
       ) : (
-        <Text style={styles.noResults}>No tutors found</Text>
+        <View style={styles.placeholderImage}>
+          <Text style={styles.placeholderText}>Ingen billede</Text>
+        </View>
       )}
+      <Text style={styles.tutorText}>{tutor.name}</Text>
+      <Text style={styles.tutorText}>{tutor.subjects}</Text>
+      <Text style={styles.tutorText}>Pris: {tutor.rate}</Text>
+    </View>
+  ))
+) : (
+  <Text style={styles.noResults}>Ingen tutorer fundet</Text>
+)}
+
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -81,6 +88,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#ddd',
+    alignItems: 'center',
   },
   tutorText: {
     fontSize: 16,
@@ -89,5 +97,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     color: '#777',
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  placeholderImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#ccc',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  placeholderText: {
+    color: '#fff',
+    fontSize: 12,
   },
 });

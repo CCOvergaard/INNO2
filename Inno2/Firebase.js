@@ -1,5 +1,8 @@
+// firebase.js
+
 import { initializeApp } from 'firebase/app';
-import { getDatabase } from 'firebase/database'; // Importér Realtime Database
+import { getDatabase } from 'firebase/database';
+import { getStorage } from 'firebase/storage'; // Importér Firebase Storage
 
 // Firebase konfiguration
 const firebaseConfig = {
@@ -18,4 +21,8 @@ const app = initializeApp(firebaseConfig);
 // Få reference til Realtime Database
 const db = getDatabase(app);
 
-export { db };
+// Få reference til Firebase Storage
+const storage = getStorage(app);
+
+// Eksporter database og storage
+export { db, storage };
