@@ -1,32 +1,31 @@
 import React from "react";
 import { Button, View, Text, StyleSheet } from "react-native";
 
-// Komponent for startsiden
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      {/* Titel på startsiden */}
       <Text style={styles.title}>Velkommen til Tutormatch!</Text>
-
-      {/* Knap til at navigere til TutorSignUp-skærmen */}
+      
       <Button
         title="Tilmeld dig som Tutor"
         onPress={() => navigation.navigate("TutorSignUp")}
       />
-
-      {/* Knap til at navigere til StudentSearch-skærmen */}
+      
       <Button
         title="Find en Tutor"
         onPress={() => navigation.navigate("StudentSearch")}
       />
-
-      {/* Knap til at navigere til TutorProfile-skærmen */}
+      
       <Button
-        title="Din Tutorprofil"
-        onPress={() => navigation.navigate("TutorProfile")}
+        title="Profilvisning"
+        onPress={() => navigation.navigate("TutorProfile", { tutor: { name: 'Eksempel Tutor', subjects: 'Matematik', rate: '200kr/t' } })} // eksemple på nuværende tidspunkt, skal fetche fra databasen når app er færdig udviklet 
       />
-
-      {/* Knap til at navigere til Settings-skærmen */}
+      
+      <Button
+        title="Tutor Detaljer"
+        onPress={() => navigation.navigate("TutorDetails", { tutor: { name: 'Eksempel Tutor', subjects: 'Matematik', rate: '200kr/t' } })} // eksemple på nuværende tidspunkt, skal fetche fra databasen når app er færdig udviklet 
+      />
+      
       <Button
         title="Indstillinger"
         onPress={() => navigation.navigate("Settings")}
@@ -35,7 +34,6 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-//css
 const styles = StyleSheet.create({
   container: {
     flex: 1,
