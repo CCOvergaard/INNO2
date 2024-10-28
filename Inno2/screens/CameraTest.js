@@ -5,67 +5,72 @@ import { StatusBar } from 'expo-status-bar';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function CameraTest({ navigation }) {
-  // Permissions
+  // Kamera tilladelser
   const [permission, requestPermission] = Camera.useCameraPermissions();
 
-  // Camera reference and state
+  // Kamera reference og state variabler
   const cameraRef = useRef();
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState(CameraType.back);
-  const [imagesArr, setImagesArr] = useState([]);
-  const [gallery, setGallery] = useState(false);
+  const [imagesArr, setImagesArr] = useState([]); // Array til at gemme billeder
+  const [gallery, setGallery] = useState(false); // Viser eller skjuler galleriet
 
-  // Camera permission check
+  // Tjekker om tilladelse til kamera er givet
   if (!permission) {
     return <View />;
   }
 
   if (!permission.granted) {
+    // Beder om tilladelse, hvis den ikke er givet
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="Grant permission" />
+        <Text style={{ textAlign: 'center' }}>Vi har brug for din tilladelse til at vise kameraet</Text>
+        <Button onPress={requestPermission} title="Giv tilladelse" />
       </View>
     );
   }
 
-  // Taking a snapshot
+  // Funktion til at tage et billede
   const snap = async () => {
     if (!cameraRef.current) {
-      console.log("No camera ref");
+      console.log("Ingen kamera reference");
       return;
     }
     setLoading(true);
     const result = await cameraRef.current.takePictureAsync();
-    setImagesArr([...imagesArr, result]);
+    setImagesArr([...imagesArr, result]); // Tilføjer det nye billede til arrayet
     setLoading(false);
   };
 
-  // Toggle camera type
+  // Skifter mellem front- og bagkamera
   function toggleCameraType() {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
 
-  // Toggle gallery
+  // Viser eller skjuler galleriet
   function toggleGallery() {
     setGallery(current => !current);
   }
 
-  // Camera Gallery Component
+  // Komponent til at vise taget billeder i et galleri
   const CameraGallery = () => {
     return (
       <View style={styles.gallery}>
         <Text style={styles.buttonGallery}>Billeder taget: {imagesArr.length}</Text>
         <ScrollView horizontal={true}>
-          {
-            imagesArr.length > 0
-              ? imagesArr.map((image, index) => (
-                <TouchableOpacity key={index} style={{ paddingHorizontal: 10 }} onPress={() => navigation.navigate('ImageScreen', { image: image.uri })}>
-                  <Image source={{ uri: image.uri }} style={{ width: 80, height: 80, borderRadius: 10 }} />
-                </TouchableOpacity>
-              ))
-              : <Text style={{ color: "white" }}> No images taken </Text>
-          }
+          {imagesArr.length > 0 ? (
+            imagesArr.map((image, index) => (
+              <TouchableOpacity
+                key={index}
+                style={{ paddingHorizontal: 10 }}
+                onPress={() => navigation.navigate('ImageScreen', { image: image.uri })}
+              >
+                <Image source={{ uri: image.uri }} style={{ width: 80, height: 80, borderRadius: 10 }} />
+              </TouchableOpacity>
+            ))
+          ) : (
+            <Text style={{ color: "white" }}>Ingen billeder taget</Text>
+          )}
         </ScrollView>
       </View>
     );
@@ -77,30 +82,32 @@ export default function CameraTest({ navigation }) {
         <Camera style={styles.camera} type={type} ref={cameraRef}>
           <View style={styles.buttonContainer}>
             <View style={{ flex: 1, alignSelf: 'flex-end' }}>
+              {/* Knap til at skifte mellem front- og bagkamera */}
               <TouchableOpacity style={styles.flipbtn} onPress={toggleCameraType}>
                 <Ionicons name="camera-reverse-outline" size={32} color="#fff" />
               </TouchableOpacity>
             </View>
             <View style={{ flex: 1, alignSelf: 'flex-end' }}>
+              {/* Knap til at tage et billede */}
               <TouchableOpacity style={styles.snapbtn} onPress={snap}>
-                <Text style={styles.text}>{loading ? "Loading..." : ""}</Text>
+                <Text style={styles.text}>{loading ? "Indlæser..." : ""}</Text>
               </TouchableOpacity>
             </View>
             <View style={{ flex: 1, alignSelf: 'flex-end' }}>
+              {/* Knap til at vise eller skjule galleriet */}
               <TouchableOpacity style={styles.gallerybtn} onPress={toggleGallery}>
                 <Ionicons name="copy-outline" size={32} color="#fff" />
               </TouchableOpacity>
             </View>
           </View>
         </Camera>
-        {
-          gallery ? <CameraGallery /> : null
-        }
+        {gallery ? <CameraGallery /> : null}
       </View>
       <StatusBar style="light" />
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

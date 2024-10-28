@@ -5,24 +5,31 @@ import { Button, View, Text, StyleSheet } from "react-native";
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      {/* Titel på hjemmeskærmen */}
-      <Text style={styles.title}>Welcome to Tutormatch!</Text>
+      {/* Titel på startsiden */}
+      <Text style={styles.title}>Velkommen til Tutormatch!</Text>
 
-      {/* Knappen for at navigere til TutorSignUp-skærmen */}
+      {/* Knap til at navigere til TutorSignUp-skærmen */}
       <Button
-        title="Sign Up as Tutor"
+        title="Tilmeld dig som Tutor"
         onPress={() => navigation.navigate("TutorSignUp")}
       />
 
-      {/* Knappen for at navigere til StudentSearch-skærmen */}
+      {/* Knap til at navigere til StudentSearch-skærmen */}
       <Button
-        title="Find a Tutor"
+        title="Find en Tutor"
         onPress={() => navigation.navigate("StudentSearch")}
       />
 
+      {/* Knap til at navigere til TutorProfile-skærmen */}
       <Button
-        title="Open Camera"
-        onPress={() => navigation.navigate("CameraTest")}
+        title="Din Tutorprofil"
+        onPress={() => navigation.navigate("TutorProfile")}
+      />
+
+      {/* Knap til at navigere til Settings-skærmen */}
+      <Button
+        title="Indstillinger"
+        onPress={() => navigation.navigate("Settings")}
       />
     </View>
   );

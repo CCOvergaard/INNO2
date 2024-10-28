@@ -2,22 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { View, Image, Dimensions } from 'react-native';
 
 export default function ImageScreen({ route }) {
-  // State for the image URI
+  // State for billedets URI
   const [image, setImage] = useState('');
 
-  // useEffect to set the image URI from the route parameter
+  // Sætter billedet fra route-parametrene, når komponenten mountes
   useEffect(() => {
     setImage(route.params.image);
 
     return () => {
-      setImage(''); // Clear image state when component unmounts
+      setImage(''); // Rydder billedet fra state, når komponenten unmountes
     };
   }, []);
 
-  // Get dimensions of the window for full-screen display
+  // Henter skærmens dimensioner for at vise billedet i fuld skærm
   const { width, height } = Dimensions.get('window');
 
-  // Return the image in full screen
+  // Returnerer billedet i fuld skærm
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Image

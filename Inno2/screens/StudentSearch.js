@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Image } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 import { db } from '../Firebase';
 
-export default function StudentSearch() {
+export default function StudentSearch({ navigation }) {
   const [exam, setExam] = useState('');
   const [tutors, setTutors] = useState([]);
 
@@ -37,25 +37,33 @@ export default function StudentSearch() {
         onChangeText={setExam}
       />
       <Button title="Søg" onPress={handleSearch} />
-      {tutors.length > 0 ? (
-  tutors.map((tutor, index) => (
-    <View key={index} style={styles.tutorCard}>
-      {tutor.profileImage ? (
-        <Image source={{ uri: tutor.profileImage }} style={styles.profileImage} />
-      ) : (
-        <View style={styles.placeholderImage}>
-          <Text style={styles.placeholderText}>Ingen billede</Text>
-        </View>
-      )}
-      <Text style={styles.tutorText}>{tutor.name}</Text>
-      <Text style={styles.tutorText}>{tutor.subjects}</Text>
-      <Text style={styles.tutorText}>Pris: {tutor.rate}</Text>
-    </View>
-  ))
-) : (
-  <Text style={styles.noResults}>Ingen tutorer fundet</Text>
-)}
 
+      {tutors.length > 0 ? (
+        tutors.map((tutor, index) => (
+          <View key={index} style={styles.tutorCard}>
+            {tutor.profileImage ? (
+              <Image source={{ uri: tutor.profileImage }} style={styles.profileImage} />
+            ) : (
+              <View style={styles.placeholderImage}>
+                <Text style={styles.placeholderText}>Ingen billede</Text>
+              </View>
+            )}
+            <Text style={styles.tutorText}>{tutor.name}</Text>
+            <Text style={styles.tutorText}>{tutor.subjects}</Text>
+            <Text style={styles.tutorText}>Pris: {tutor.rate}</Text>
+            
+            {/* Knappen til at navigere til TutorProfile-skærmen */}
+            <TouchableOpacity
+              onPress={() => navigation.navigate("TutorProfile", { tutor })}
+              style={styles.profileButton}
+            >
+              <Text style={styles.profileButtonText}>Vis profil</Text>
+            </TouchableOpacity>
+          </View>
+        ))
+      ) : (
+        <Text style={styles.noResults}>Ingen tutorer fundet</Text>
+      )}
     </View>
   );
 }
@@ -90,6 +98,23 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     alignItems: 'center',
   },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  profileButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  profileButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
   tutorText: {
     fontSize: 16,
   },
@@ -97,12 +122,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     color: '#777',
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
   },
   placeholderImage: {
     width: 100,

@@ -8,22 +8,26 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { StatusBar } from 'expo-status-bar';
 
 export default function TutorSignUp({ navigation }) {
+  // State-variabler til at gemme brugerens input
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subjects, setSubjects] = useState('');
   const [rate, setRate] = useState('');
   const [profileImage, setProfileImage] = useState(null);
 
+  // Kamera tilladelser og referencer
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const cameraRef = useRef();
   const [type, setType] = useState(CameraType.back);
   const [loading, setLoading] = useState(false);
 
+  // Tjekker om tilladelse til kamera er givet
   if (!permission) {
     return <View />;
   }
 
   if (!permission.granted) {
+    // Beder om tilladelse, hvis den ikke er givet
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>Vi har brug for din tilladelse til at vise kameraet</Text>
@@ -32,6 +36,7 @@ export default function TutorSignUp({ navigation }) {
     );
   }
 
+  // Håndterer tilmeldingen af en ny tutor
   const handleSignUp = async () => {
     const tutorRef = ref(db, 'tutors/');
     const newTutorRef = push(tutorRef);
@@ -52,7 +57,7 @@ export default function TutorSignUp({ navigation }) {
       }
     }
 
-    // Gem tutorens data i databasen
+    // Gemmer tutorens data i databasen
     set(newTutorRef, {
       name: name,
       email: email,
@@ -62,7 +67,7 @@ export default function TutorSignUp({ navigation }) {
     })
       .then(() => {
         alert('Tutor tilmeldt succesfuldt!');
-        // Nulstil felter (valgfrit)
+        // Nulstiller felterne efter succesfuld tilmelding
         setName('');
         setEmail('');
         setSubjects('');
@@ -74,6 +79,7 @@ export default function TutorSignUp({ navigation }) {
       });
   };
 
+  // Funktion til at tage et billede
   const snap = async () => {
     if (!cameraRef.current) {
       console.log("Ingen kamera reference");
@@ -81,10 +87,11 @@ export default function TutorSignUp({ navigation }) {
     }
     setLoading(true);
     const result = await cameraRef.current.takePictureAsync();
-    setProfileImage(result);
+    setProfileImage(result); // Gemmer det tagne billede i state
     setLoading(false);
   };
 
+  // Skifter mellem front- og bagkamera
   function toggleCameraType() {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
@@ -93,6 +100,7 @@ export default function TutorSignUp({ navigation }) {
     <SafeAreaView style={styles.safeview}>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.header}>Tutor Tilmelding</Text>
+        {/* Inputfelter til brugerens oplysninger */}
         <TextInput
           style={styles.input}
           placeholder="Navn"
@@ -118,15 +126,18 @@ export default function TutorSignUp({ navigation }) {
           onChangeText={setRate}
         />
 
+        {/* Kamera-komponent til at tage et profilbillede */}
         <View style={styles.cameraContainer}>
           <Camera style={styles.camera} type={type} ref={cameraRef}>
             <View style={styles.buttonContainer}>
               <View style={{ flex: 1, alignSelf: 'flex-end' }}>
+                {/* Knap til at skifte mellem front- og bagkamera */}
                 <TouchableOpacity style={styles.flipbtn} onPress={toggleCameraType}>
                   <Ionicons name="camera-reverse-outline" size={32} color="#fff" />
                 </TouchableOpacity>
               </View>
               <View style={{ flex: 1, alignSelf: 'flex-end' }}>
+                {/* Knap til at tage et billede */}
                 <TouchableOpacity style={styles.snapbtn} onPress={snap}>
                   <Text style={styles.text}>{loading ? "Indlæser..." : "Tag billede"}</Text>
                 </TouchableOpacity>
@@ -135,12 +146,14 @@ export default function TutorSignUp({ navigation }) {
           </Camera>
         </View>
 
+        {/* Viser det tagne billede, hvis der er et */}
         {profileImage && (
           <View style={styles.imagePreviewContainer}>
             <Image source={{ uri: profileImage.uri }} style={styles.profileImage} />
           </View>
         )}
 
+        {/* Knap til at tilmelde tutoren */}
         <Button title="Tilmeld" onPress={handleSignUp} />
         <StatusBar style="light" />
       </ScrollView>
